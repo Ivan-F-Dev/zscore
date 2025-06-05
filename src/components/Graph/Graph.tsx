@@ -3,50 +3,67 @@
 
 
 import {type FC} from 'react';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import {
+    LineChart,
+    Line,
+    XAxis,
+    YAxis,
+    CartesianGrid,
+    Tooltip,
+    Legend,
+    ResponsiveContainer,
+    ReferenceArea
+} from 'recharts';
 // import s from "./Graph.module.scss"
 type GraphProps = {
-
+    someProps: number
 };
 
 const data = [
     {
+        x: 0,
         name: 'Page A',
         uv: 4000,
         pv: 2400,
         amt: 2400,
     },
     {
+        x: 100,
         name: 'Page B',
         uv: 3000,
         pv: 1398,
         amt: 2210,
     },
     {
+        x: 200,
         name: 'Page C',
         uv: 2000,
         pv: 9800,
         amt: 2290,
     },
     {
+        x: 300,
         name: 'Page D',
         uv: 2780,
         pv: 3908,
         amt: 2000,
     },
     {
+        x: 400,
         name: 'Page E',
         uv: 1890,
         pv: 4800,
         amt: 2181,
     },
     {
+        x: 500,
         name: 'Page F',
         uv: 2390,
         pv: 3800,
         amt: 2500,
     },
     {
+        x: 600,
         name: 'Page G',
         uv: 3490,
         pv: 4300,
@@ -58,7 +75,6 @@ const CustomDot = (props: { cx?: number, cy?: number, dataKey? : string, payload
     const { cx, cy,dataKey, payload } = props;
     const color = dataKey === 'uv' ? '#82ca9d' : '#8884d8'
     const highlight = dataKey === 'uv' ? payload?.highlightUv : payload?.highlightPv;
-    console.log(props)
     return (
         <circle
             cx={cx}
@@ -103,8 +119,26 @@ export const Graph:FC<GraphProps> = () => {
                 }}
             >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
+                <XAxis dataKey="x" />
                 <YAxis />
+                {normalizedData.map((d, i, array) => {
+                    if (d?.highlightUv || d?.highlightPv) {
+                        console.log(d)
+                        return (
+                            <ReferenceArea
+                                key={`highlight-col-${i}`}
+                                x1={i === 0 ? d.x : d.x - 100}
+                                x2={i === array.length-1 ? d.x : d.x + 100}
+                                y1={0}
+                                y2={10000}
+                                fill={d?.highlightUv ? "#82ca9d" : "#8884d8"}
+                                fillOpacity={0.55}
+                                ifOverflow="extendDomain"
+                            />
+                        );
+                    }
+                    return null;
+                })}
                 <Tooltip />
                 <Legend />
                 <Line type="monotone" dataKey="pv" stroke="#8884d8" dot={<CustomDot />}/>
